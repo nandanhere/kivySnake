@@ -1,0 +1,23 @@
+
+<GameWidget>:
+    score:0
+    diff:0
+    speedup:False
+    keyPressed:'up'
+
+
+
+
+<Cell>:
+    type :'BODY'
+    direction:'none'
+    canvas:
+        Color:
+            group: "color"
+            rgb: (0, 1, 0, 1) if self.type == 'BODY' else (0.84314,0.96078,0.25882,1) if self.type == 'BODY1' else (1,0,0,1) if self.type == "TAINTED"  else (0.647,0.658,0.627,1) if self.type == "DEAD" else (0.47058823529411764, 0.47843137254901963, 0.4549019607843137,1) if self.type == 'DEAD1'   else (1,1,1,1)    
+        Rectangle:
+            group:'rectangle'
+            id: cell_rect_id
+            size: self.size
+            pos: self.pos
+            source: 'assets/donut.png' if (self.type == 'FOOD' or self.type == 'TAINTED') else None

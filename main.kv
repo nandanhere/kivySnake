@@ -1,0 +1,39 @@
+
+#:import webbrowser webbrowser
+WindowManager:
+    MainWindow:
+    SecondWindow:
+
+<MainWindow>:
+    name: "main"
+    Button:
+        text: "Start!"
+        on_release:
+            app.root.current = "second"
+            root.manager.transition.direction = "left"
+
+
+<SecondWindow>:
+    name: "second"
+
+
+<ScoreLabel>:
+    score:0
+    state: "PLAY"
+    highScore:0
+    chances:5
+    Button:
+        markup:True
+        text:"Score:{}\n [b]Chances[/b]:{}\n High Score : {}".format(self.parent.score,self.parent.chances,self.parent.highScore) 
+        halign: 'center'
+        valign: 'middle'
+        font_size: 20
+        on_release:
+            if self.parent.state == "DEAD" or self.parent.state == 'PLAY':\
+            app.root.current = "main";\
+            self.parent.parent.parent.parent.transition.direction = "right";
+            self.parent.on_release()
+    
+        
+
+
