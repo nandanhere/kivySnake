@@ -1,6 +1,7 @@
-from kivy.uix.widget import Widget
 from random import randint
 from gameConfig import GameConfig
+from kivy.uix.widget import Widget
+
 class Cell(Widget):
     def __init__(self,pos=(0,0),size=(50,50),type='BODY',direction='none' ,**kwargs):
         super().__init__(**kwargs)

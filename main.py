@@ -1,3 +1,4 @@
+import os,sys
 from random import randint
 from gameConfig import GameConfig
 from kivy.config import Config
@@ -12,8 +13,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.storage.jsonstore import JsonStore
 from kivy.utils import platform
-import os,webbrowser
-import sys
 # for android -----------------
 # from android.permissions import request_permissions, Permission
 # from android.storage import primary_external_storage_path

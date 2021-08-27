@@ -1,6 +1,6 @@
+import webbrowser
 from kivy.uix.widget import Widget
 from kivy.uix.floatlayout import FloatLayout
-import webbrowser
 
 class ScoreLabel(FloatLayout):
     def __init__(self,score=0,chances=5,**kwargs):
@@ -16,14 +16,17 @@ class ScoreLabel(FloatLayout):
 
     def updateText(self):
         text = ""
+        if self.state == "HIGHSCORE":
+            pass
         if self.state == "PLAY":
-            text = "Score:{}\n [b]Chances[/b]:{}\n High Score : {}".format(self.score,self.chances,self.highScore) #type:ignore
+            text = "Score:{}\n [b]Chances[/b]:{}\n [i]High Score : {}[/i]".format(self.score,self.chances,self.highScore) #type:ignore
         elif self.state == "DEAD":#type:ignore
-            text = "YOU ARE DEAD!!!\n HIGH SCORE:{}".format(self.highScore)#type:ignore
+            text = "[b][color=#FF0000]YOU ARE DEAD!!!\n HIGH SCORE:{}[/color][/b]".format(self.highScore)#type:ignore
         elif self.state == "EASTEREGG":#type:ignore
-            text = "EASTER EGG!!!!\n High Score : {}".format(self.highScore) #type:ignore
+            text = "[b][color=#00FF00]EASTER EGG[/b]!!!!\n High Score : {}[/color]".format(self.highScore) #type:ignore
         for child in self.children:
             child.text = text
+            child.background_color = (0,0,0,1) if self.state == "DEAD" else (0,1,1,1) if self.state == "EASTEREGG" else child.background_color
 
 
     def updateScore(self,score):

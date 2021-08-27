@@ -1,10 +1,8 @@
-      
+from gameConfig import GameConfig      
 from Cell import Cell
 from kivy.uix.widget import Widget
-from gameConfig import GameConfig
 from kivy.clock import Clock
 from kivy.core.window import Window
-from random import randint
 from kivy.lang import Builder
 from kivy.core.audio import Sound, SoundLoader
 
@@ -14,6 +12,9 @@ maxx ,maxy = sizee[0],sizee[1]
 minx,miny = maxx * .1 , maxy * .1
 
 # sounds
+# requirements = python3,kivy,ffpyplayer - add in .spec
+
+
 ateadonut = SoundLoader.load('assets/ateadonut.wav'); ateadonut.volume = 0.5
 atepoison = SoundLoader.load('assets/atepoison.wav');
 startgame = SoundLoader.load('assets/startgame.wav'); startgame.volume = 0.5
@@ -27,8 +28,8 @@ class GameWidget(Widget):
         global label
         label = labelWidget
 # keyboard controls----------
-        self._keyboard = Window.request_keyboard(self._on_keyboard_closed,self) #type:ignore
-        self._keyboard.bind(on_key_down=self._on_key_down,) #type:ignore
+        # self._keyboard = Window.request_keyboard(self._on_keyboard_closed,self) #type:ignore
+        # self._keyboard.bind(on_key_down=self._on_key_down,) #type:ignore
 #  keyboard controls
         self.config = config
         self.head = Cell(pos=(maxx // 2,maxy / 2),size=GameConfig.DEFAULT_SIZE)
