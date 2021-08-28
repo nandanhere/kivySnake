@@ -20,6 +20,7 @@ atepoison = SoundLoader.load('assets/atepoison.wav');
 startgame = SoundLoader.load('assets/startgame.wav'); startgame.volume = 0.5
 died = SoundLoader.load('assets/died.wav'); died.volume =  0.5
 gotahighscore = SoundLoader.load('assets/gotahighscore.wav')
+oneup = SoundLoader.load('assets/oneup.wav')
 
 kv = Builder.load_file('GameWidget.kv')
 class GameWidget(Widget):
@@ -28,8 +29,8 @@ class GameWidget(Widget):
         global label
         label = labelWidget
 # keyboard controls----------
-        # self._keyboard = Window.request_keyboard(self._on_keyboard_closed,self) #type:ignore
-        # self._keyboard.bind(on_key_down=self._on_key_down,) #type:ignore
+        self._keyboard = Window.request_keyboard(self._on_keyboard_closed,self) #type:ignore
+        self._keyboard.bind(on_key_down=self._on_key_down,) #type:ignore
 #  keyboard controls
         self.config = config
         self.head = Cell(pos=(maxx // 2,maxy / 2),size=GameConfig.DEFAULT_SIZE)
@@ -59,6 +60,10 @@ class GameWidget(Widget):
 
     def increment_score(self):
         label.updateScore(label.score + 100)
+        if label.score % 5000 == 0 : 
+            self.config.CHANCES += 1
+            label.chances += 1
+            oneup.play()
         if label.score > self.config.HIGH_SCORE:
                 if self.config.STATE == label.state == 'PLAY': gotahighscore.play()
                 self.config.HIGH_SCORE = label.score

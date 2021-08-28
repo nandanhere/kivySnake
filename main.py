@@ -1,3 +1,4 @@
+__version__ = "1.0.0"
 import os,sys
 from random import randint
 from gameConfig import GameConfig
@@ -32,8 +33,13 @@ def getAddr():
         addr = download_dir_path + "/scores.json"
         pass
     else:
-        a = sys.path[0]
-        addr = a + '/scores.json'
+        # following code will check if there is a directory called .kivySnake in the HOME directory of the user. this is done so that when we package the app
+        #  as a standalone executable, in case the app runs in read only mode, it wont be able to access any file inside itself/
+        path = os.path.join( os.path.expanduser('~')) + "/.kivySnake"
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        addr = path + "/scores.json"
+    
     return addr
 class MainWindow(Screen):
     pass

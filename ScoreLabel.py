@@ -7,7 +7,8 @@ class ScoreLabel(FloatLayout):
         super().__init__(**kwargs)
     def on_release(self):
         if self.state == 'EASTEREGG':#type:ignore
-            webbrowser.open('https://github.com/nandanhere')
+            self.state = "PAUSED"
+            webbrowser.open('https://www.youtube.com/watch?v=KMU0tzLwhbE')
         if self.state == "PLAY":
             self.state = "PAUSED"
 
@@ -23,7 +24,7 @@ class ScoreLabel(FloatLayout):
         elif self.state == "DEAD":#type:ignore
             text = "[b][color=#FF0000]YOU ARE DEAD!!!\n HIGH SCORE:{}[/color][/b]".format(self.highScore)#type:ignore
         elif self.state == "EASTEREGG":#type:ignore
-            text = "[b][color=#00FF00]EASTER EGG[/b]!!!!\n High Score : {}[/color]".format(self.highScore) #type:ignore
+            text = "[b][color=#00FF00]EASTER EGG!! CLICK ON ME[/b]!!!!\n High Score : {}[/color]".format(self.highScore) #type:ignore
         for child in self.children:
             child.text = text
             child.background_color = (0,0,0,1) if self.state == "DEAD" else (0,1,1,1) if self.state == "EASTEREGG" else child.background_color
