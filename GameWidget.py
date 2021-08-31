@@ -15,10 +15,10 @@ minx,miny = maxx * .1 , maxy * .1
 # requirements = python3,kivy,ffpyplayer - add in .spec
 
 
-ateadonut = SoundLoader.load('assets/ateadonut.wav'); ateadonut.volume = 0.5
+ateadonut = SoundLoader.load('assets/ateadonut.wav'); ateadonut.volume = 0.5        #type: ignore
 atepoison = SoundLoader.load('assets/atepoison.wav');
-startgame = SoundLoader.load('assets/startgame.wav'); startgame.volume = 0.5
-died = SoundLoader.load('assets/died.wav'); died.volume =  0.5
+startgame = SoundLoader.load('assets/startgame.wav'); startgame.volume = 0.5        #type: ignore
+died = SoundLoader.load('assets/died.wav'); died.volume =  0.5                      #type: ignore
 gotahighscore = SoundLoader.load('assets/gotahighscore.wav')
 oneup = SoundLoader.load('assets/oneup.wav')
 
@@ -63,9 +63,9 @@ class GameWidget(Widget):
         if label.score % 5000 == 0 : 
             self.config.CHANCES += 1
             label.chances += 1
-            oneup.play()
+            oneup.play()                                                                    #type: ignore
         if label.score > self.config.HIGH_SCORE:
-                if self.config.STATE == label.state == 'PLAY': gotahighscore.play()
+                if self.config.STATE == label.state == 'PLAY': gotahighscore.play()         #type: ignore
                 self.config.HIGH_SCORE = label.score
                 label.highScore = label.score
                 label.state = 'EASTEREGG'
@@ -77,7 +77,7 @@ class GameWidget(Widget):
         if label.state == "PAUSED" or self.config.STATE == 'PAUSED':
             label.state = "PLAY"
             self.config.STATE = "PLAY"
-            startgame.play()
+            startgame.play()                                                                #type: ignore
 
         if label.state == "DEAD" or self.config.STATE == 'DEAD':
             self.config.RESET_COUNT -= 1
@@ -96,10 +96,10 @@ class GameWidget(Widget):
 
     def _on_key_down(self,keyboard,keycode,text,modifiers):
         directions = ['up','right','down','left','w','d','s','a']
-        if label.state == "PAUSED":
+        if label.state == "PAUSED" or self.config.STATE == "PAUSED":
                 label.state = "PLAY"
                 self.config.STATE = "PLAY"
-                startgame.play()
+                startgame.play()                                                            #type: ignore
 
         if label.state == "DEAD":
             self.config.RESET_COUNT -= 1
@@ -142,16 +142,16 @@ class GameWidget(Widget):
             if collides(self.head.pos,food.pos,self.snakeList[0].size,food.size):
                 if food.type == 'TAINTED':
                     label.getHit()
-                    atepoison.play()
+                    atepoison.play()                                                        #type: ignore
                     if label.chances == 0:
                         self.config.STATE = 'DEAD'
                         label.state = "DEAD"
-                        died.play()
+                        died.play()                                                         #type: ignore
                         for i in range(len(self.snakeList)):
                             self.snakeList[i].type = "DEAD" if i % 2 == 0 else 'DEAD1'
                 else:
                     self.increment_score()
-                    ateadonut.play()
+                    ateadonut.play()                                                        #type: ignore
                     type = "BODY" if len(self.snakeList) % 2 == 0 else 'BODY1'
                     sb = Cell(pos=(currentx,currenty),type=type) #type:ignore
                     self.snakeList.append(sb)

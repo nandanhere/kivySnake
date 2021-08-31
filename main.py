@@ -1,4 +1,5 @@
 __version__ = "1.0.0"
+#todo : add some ui elements with kivymd for an example
 import os,sys
 from random import randint
 from gameConfig import GameConfig
@@ -14,13 +15,13 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.storage.jsonstore import JsonStore
 from kivy.utils import platform
-# for android -----------------
-# from android.permissions import request_permissions, Permission
-# from android.storage import primary_external_storage_path
+# for android ----------
+if platform == 'android':
+    from android.permissions import request_permissions, Permission             #type: ignore
+    from android.storage import primary_external_storage_path                   #type: ignore
 # for android-------
 global addr,store
 addr = ""
-
 def getAddr():
     global addr
     if platform == 'android':
@@ -29,15 +30,15 @@ def getAddr():
             #android.permissions = Permission.WRITE_EXTERNAL_STORAGE
             #android.permissions = Permission.READ_EXTERNAL_STORAGE
         dir = primary_external_storage_path()
-        download_dir_path = os.path.join(dir, 'Download')
+        download_dir_path = os.path.join(dir, 'Download')                           #type: ignore
         addr = download_dir_path + "/scores.json"
         pass
     else:
         # following code will check if there is a directory called .kivySnake in the HOME directory of the user. this is done so that when we package the app
         #  as a standalone executable, in case the app runs in read only mode, it wont be able to access any file inside itself/
-        path = os.path.join( os.path.expanduser('~')) + "/.kivySnake"
-        if not os.path.isdir(path):
-            os.makedirs(path)
+        path = os.path.join( os.path.expanduser('~')) + "/.kivySnake"               #type: ignore
+        if not os.path.isdir(path):                                                  #type: ignore
+            os.makedirs(path)                                                         #type: ignore
         addr = path + "/scores.json"
     
     return addr
@@ -49,14 +50,14 @@ class SecondWindow(Screen):
         # initialisation of values in the game--------
         store = JsonStore(addr)
         config = GameConfig()
-        config.STATE = 'PAUSED' #type: ignore
-        config.STORE = store  #type:ignore
+        config.STATE = 'PAUSED'                                                                              #type: ignore
+        config.STORE = store                                                                                  #type:ignore
         if store.exists("HIGH_SCORE"):
             scores = store.get('HIGH_SCORE')
             config.HIGH_SCORE = scores['HIGH_SCORE']
         else:
             store['HIGH_SCORE'] = {"HIGH_SCORE":1000}
-            config.HIGH_SCORE = 1000 #type:ignore
+            config.HIGH_SCORE = 1000                                                                        #type:ignore
         # ---------------------------------
         boxLayout  = BoxLayout()
         boxLayout.orientation = "vertical"
