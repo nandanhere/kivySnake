@@ -22,10 +22,10 @@ In the buildozer.spec file , add the following:
     source.include_exts = py,png,jpg,kv,atlas,wav
 To prevent assets from causing problems try putting them in the same directory as main.py and change the addresses accordingly
 
-## Using [Cross Platform Python GUI](https://github.com/nandanhere/cross-platform-python-gui)
+## Using [Cross Platform Python GUI](https://github.com/maltfield/cross-platform-python-gui)
 - Branch and Clone the repository to a folder
 - In the src subdirectory, clear the folder and add all the kivysnake code including assets into it.
-- Change all references of "helloWorld" in the build folder's files (in KivySnake's case we convert helloWorld to kivySnake in each and every file in [cross-platform-python-gui/build](https://github.com/nandanhere/cross-platform-python-gui/tree/master/build) )
+- Change all references of "helloWorld" in the build folder's files (in KivySnake's case we convert helloWorld to kivySnake in each and every file in [cross-platform-python-gui/build](https://github.com/maltfield/cross-platform-python-gui/tree/master/build) )
 - Push to your branch. The workflows will generate the releases for each platform. (mac, linux and windows)
 ## To be done
 - Main menu (to be done with kivymd to integrate material design)
