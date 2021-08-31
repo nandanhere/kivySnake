@@ -5,6 +5,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.core.audio import Sound, SoundLoader
+from kivy.utils import platform
 
 global maxx,maxy,minx,miny
 sizee = Window.size #type:ignore
@@ -29,8 +30,9 @@ class GameWidget(Widget):
         global label
         label = labelWidget
 # keyboard controls----------
-        self._keyboard = Window.request_keyboard(self._on_keyboard_closed,self) #type:ignore
-        self._keyboard.bind(on_key_down=self._on_key_down,) #type:ignore
+        if platform == 'android':
+            self._keyboard = Window.request_keyboard(self._on_keyboard_closed,self) #type:ignore
+            self._keyboard.bind(on_key_down=self._on_key_down,) #type:ignore
 #  keyboard controls
         self.config = config
         self.head = Cell(pos=(maxx // 2,maxy / 2),size=GameConfig.DEFAULT_SIZE)
