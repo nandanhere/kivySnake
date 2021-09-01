@@ -1,21 +1,69 @@
 #:import webbrowser webbrowser
 
 # this is a comment
-WindowManager:
-    MainWindow:
-    SecondWindow:
+ScreenManager:
+    Main:
+    OptionsScreen:
+    GameScreen:
+        
+<Main>:
+    name:'main'
+    id:mainscreen
+    MDBoxLayout:
+        orientation: "vertical"
+        md_bg_color: 0,0,0,1
+        MDLabel:
+            id:label
+            text: "Kivy Snake"
+            font_style:"H2"
+            halign: "center"
+            theme_text_color: "Custom"
+            text_color: 1, 1, 1, 1
+        MDIconButton:
+            icon:'play-circle'
+            user_font_size: "128sp"
+            halign: "center"
+            pos_hint: {"center_x": .5, "center_y": .5}
+            theme_text_color: 'Custom'
+            text_color: 1,1,1,1
+            on_release:
+                root.manager.current = 'game'
+                root.manager.transition.direction = "up"
+        MDIconButton:
+            icon:'cog'
+            user_font_size: "64sp"
+            halign: "center"
+            pos_hint: {"center_x": .5, "center_y": .5}
+            theme_text_color: 'Custom'
+            text_color: 1,1,1,1
+            on_release:
+                root.manager.current = 'options'
+                root.manager.transition.direction = "right"
 
-<MainWindow>:
-    name: "main"
-    Button:
-        text: "Start!"
+
+<GameScreen>:
+    name:'game'
+    md_bg_color: 0,0,0,1
+    MDFlatButton:
+        text:"Game"
         on_release:
-            app.root.current = "second"
-            root.manager.transition.direction = "left"
+            root.manager.transition.direction = "up"
+            root.manager.current = 'main'
+<OptionsScreen>:
+    name:'options'
+    MDFloatLayout:
+        md_bg_color:0,0,0,1
+        MDFlatButton:
+            text:"Settings"
+            font_style:"H2"
+            halign:"center"
+            valign: 'middle'
+            theme_text_color: "Custom"
+            text_color: 1, 1, 1, 1
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            on_release:
+                root.manager.current = 'main'
 
-
-<SecondWindow>:
-    name: "second"
 
 
 <ScoreLabel>:
@@ -32,7 +80,7 @@ WindowManager:
         on_release:
             if self.parent.state == "DEAD" or self.parent.state == 'PLAY':\
             app.root.current = "main";\
-            self.parent.parent.parent.parent.transition.direction = "right";
+            self.parent.parent.parent.parent.transition.direction = "down";
             self.parent.on_release()
     
         

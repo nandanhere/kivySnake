@@ -30,7 +30,7 @@ class GameWidget(Widget):
         global label
         label = labelWidget
 # keyboard controls----------
-        if platform == 'android':
+        if platform != 'android':
             self._keyboard = Window.request_keyboard(self._on_keyboard_closed,self) #type:ignore
             self._keyboard.bind(on_key_down=self._on_key_down,) #type:ignore
 #  keyboard controls
