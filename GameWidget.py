@@ -7,15 +7,13 @@ from kivy.lang import Builder
 from kivy.core.audio import Sound, SoundLoader
 from kivy.utils import platform
 
-global maxx,maxy,minx,miny
+global maxx,maxy,minx,miny,gameConfig
 sizee = Window.size #type:ignore
 maxx ,maxy = sizee[0],sizee[1]
 minx,miny = maxx * .1 , maxy * .1
-
+gameConfig = None
 # sounds
 # requirements = python3,kivy,ffpyplayer - add in .spec
-
-
 ateadonut = SoundLoader.load('assets/ateadonut.wav'); ateadonut.volume = 0.5        #type: ignore
 atepoison = SoundLoader.load('assets/atepoison.wav');
 startgame = SoundLoader.load('assets/startgame.wav'); startgame.volume = 0.5        #type: ignore
@@ -23,6 +21,10 @@ died = SoundLoader.load('assets/died.wav'); died.volume =  0.5                  
 gotahighscore = SoundLoader.load('assets/gotahighscore.wav')
 oneup = SoundLoader.load('assets/oneup.wav')
 
+def playSound(sound,play):
+    global gameConfig
+    if play == "ON":
+        sound.play()
 kv = Builder.load_file('GameWidget.kv')
 class GameWidget(Widget):
     def __init__(self,labelWidget,config,**kwargs):
@@ -34,30 +36,35 @@ class GameWidget(Widget):
             self._keyboard = Window.request_keyboard(self._on_keyboard_closed,self) #type:ignore
             self._keyboard.bind(on_key_down=self._on_key_down,) #type:ignore
 #  keyboard controls
-        self.config = config
+        self.config = gameConfig = config
         self.head = Cell(pos=(maxx // 2,maxy / 2),size=GameConfig.DEFAULT_SIZE)
         self.head.update('up')
         self.add_widget(self.head)
         self.snakeList = []
         self.snakeList.append(self.head)
         self.foodList = []
+        print(self.snakeList)
         for i in range(GameConfig.FOOD_AMT):
-            type = 'FOOD' if i < GameConfig.FOOD_AMT *.75  else 'TAINTED'
+            type = 'FOOD' if i > GameConfig.FOOD_AMT *.75  else 'TAINTED'
             food = Cell(size=GameConfig.FOOD_SIZE,type=type) #type:ignore
             food.respawnFood(minx,miny,maxx,maxy)
             self.add_widget(food)
             self.foodList.append(food)
         Clock.schedule_interval(self.move_step,0)
+        self.config.STATE = label.state = "PAUSED"
+
+
     
     def reset_game(self):
         hs = label.highScore
         self.clear_widgets()
-        self.config.__init__()
         label.__init__()
+        self.snakeList = None
         self.config.HIGH_SCORE = label.highScore = hs
-        self.config.STATE = label.state = "PLAY"
-        Clock.idle
         self.__init__(labelWidget=label,config=self.config)
+        self.config.RESET_COUNT = 3
+        # clock.idle will make sure that the old functions do not listen for clock.
+        Clock.idle
 
 
     def increment_score(self):
@@ -65,13 +72,14 @@ class GameWidget(Widget):
         if label.score % 5000 == 0 : 
             self.config.CHANCES += 1
             label.chances += 1
-            oneup.play()                                                                    #type: ignore
+            playSound(oneup,self.config.SOUND)                                                                    #type: ignore
         if label.score > self.config.HIGH_SCORE:
-                if self.config.STATE == label.state == 'PLAY': gotahighscore.play()         #type: ignore
+                if self.config.STATE == label.state == 'PLAY': playSound(gotahighscore,self.config.SOUND)         #type: ignore
                 self.config.HIGH_SCORE = label.score
                 label.highScore = label.score
                 label.state = 'EASTEREGG'
                 self.config.STORE['HIGH_SCORE'] = {"HIGH_SCORE":label.score}
+        playSound(ateadonut,self.config.SOUND)
 
 
     def on_touch_down(self, touch):
@@ -79,11 +87,10 @@ class GameWidget(Widget):
         if label.state == "PAUSED" or self.config.STATE == 'PAUSED':
             label.state = "PLAY"
             self.config.STATE = "PLAY"
-            startgame.play()                                                                #type: ignore
+            playSound(startgame,self.config.SOUND)                                                             #type: ignore
 
         if label.state == "DEAD" or self.config.STATE == 'DEAD':
             self.config.RESET_COUNT -= 1
-
         directions = ['up','right','down','left','w','d','s','a','spacebar']
         ind = (directions.index(self.keyPressed) + 1) % 4
         self.keyPressed = directions[ind]
@@ -101,7 +108,7 @@ class GameWidget(Widget):
         if label.state == "PAUSED" or self.config.STATE == "PAUSED":
                 label.state = "PLAY"
                 self.config.STATE = "PLAY"
-                startgame.play()                                                            #type: ignore
+                playSound(startgame,self.config.SOUND)                                                            #type: ignore
 
         if label.state == "DEAD":
             self.config.RESET_COUNT -= 1
@@ -130,8 +137,7 @@ class GameWidget(Widget):
             newx = (step_size + newx) % maxx  
         # DEBUG ONLY------
         elif "spacebar" == direction:
-            self.config.STATE = 'DEAD'
-            label.state = "DEAD"
+            label.state = self.config.STATE = 'DEAD'
             for i in range(len(self.snakeList)):
                 self.snakeList[i].type = "DEAD" if i % 2 == 0 else 'DEAD1'
 
@@ -144,16 +150,14 @@ class GameWidget(Widget):
             if collides(self.head.pos,food.pos,self.snakeList[0].size,food.size):
                 if food.type == 'TAINTED':
                     label.getHit()
-                    atepoison.play()                                                        #type: ignore
+                    playSound(atepoison,self.config.SOUND)                                                      #type: ignore
                     if label.chances == 0:
-                        self.config.STATE = 'DEAD'
-                        label.state = "DEAD"
-                        died.play()                                                         #type: ignore
+                        self.config.STATE = label.state  = 'DEAD'
+                        playSound(died,self.config.SOUND)                                                        #type: ignore
                         for i in range(len(self.snakeList)):
                             self.snakeList[i].type = "DEAD" if i % 2 == 0 else 'DEAD1'
                 else:
-                    self.increment_score()
-                    ateadonut.play()                                                        #type: ignore
+                    self.increment_score()                                                      #type: ignore
                     type = "BODY" if len(self.snakeList) % 2 == 0 else 'BODY1'
                     sb = Cell(pos=(currentx,currenty),type=type) #type:ignore
                     self.snakeList.append(sb)
@@ -168,7 +172,6 @@ class GameWidget(Widget):
         if label.state == 'PAUSED' or self.config.STATE == 'PAUSED':return
         if self.config.STATE == 'DEAD':
             if self.config.RESET_COUNT == 0:
-                self.config.RESET_COUNT = 3
                 self.reset_game()
                 #  the false here tells the scheduled clock to stop executing the move_step function.
                 return False

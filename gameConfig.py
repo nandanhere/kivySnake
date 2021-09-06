@@ -5,11 +5,12 @@ class GameConfig:
     MARGIN = 4
     DEAD_CELL = (1,0,0,1)
     RESET_COUNT = 3
-    CHANCES=5
+    CHANCES = 5
     FOOD_AMT = 10
     HIGH_SCORE = 0
     STATE = "PAUSED"
     STORE = None
+    SOUND = 'ON'
     def __init__(self) -> None:
         pass
 

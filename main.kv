@@ -43,6 +43,7 @@ ScreenManager:
 
 <GameScreen>:
     name:'game'
+    config:app.config
     md_bg_color: 0,0,0,1
     MDFlatButton:
         text:"Game"
@@ -51,6 +52,7 @@ ScreenManager:
             root.manager.current = 'main'
 <OptionsScreen>:
     name:'options'
+    config:None
     MDFloatLayout:
         md_bg_color:0,0,0,1
         MDFlatButton:
@@ -63,8 +65,18 @@ ScreenManager:
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_release:
                 root.manager.current = 'main'
-
-
+        MDFlatButton:
+            selected:self.parent.parent.gameConfig.SOUND
+            text:"SOUND:" + self.selected
+            font_style:"H2"
+            halign:"center"
+            theme_text_color: "Custom"
+            text_color: 1, 1, 1, 1
+            pos_hint: {"center_x": 0.5, "center_y": 0.25}
+            on_release:
+                self.selected = 'OFF' if self.selected == 'ON' else 'ON'
+                self.parent.parent.gameConfig.SOUND = self.selected
+                self.parent.parent.gameConfig.STORE['SETTINGS'] = {'SOUND' : self.selected,}
 
 <ScoreLabel>:
     score:0

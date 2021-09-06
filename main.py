@@ -1,7 +1,11 @@
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 #todo : add some ui elements with kivymd for an example
-#todo : fix initial crash on android due to permissions.
+#todo : add difficulty settings
 import os,sys
+
+from kivy import config
+from kivy.clock import Clock
+os.environ["KIVY_TEXT"] = "pil"
 from random import randint
 from gameConfig import GameConfig
 from kivy.config import Config
@@ -23,13 +27,15 @@ from kivy.uix.screenmanager import Screen
 from kivymd.uix.button import MDIconButton
 from kivy.uix.screenmanager import Screen, ScreenManager,FadeTransition
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivy.clock import Clock
 
-
+global gameConfig
+gameConfig = None
 # for android ----------
 if platform == 'android':
     from android.permissions import request_permissions, Permission             #type: ignore
     from android.storage import primary_external_storage_path                   #type: ignore
-    from android import loadingscreen
+    from android import loadingscreen                                           #type: ignore
     loadingscreen.hide_loading_screen()
 # for android-------
 global addr,store
@@ -55,30 +61,23 @@ def getAddr():
     return addr
 class Main(Screen):
     pass
+
 class OptionsScreen(Screen):
-        pass
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.gameConfig = gameConfig
 class GameScreen(Screen):
     def __init__(self, **kwargs):
+        global gameConfig
         super().__init__(**kwargs)
-        # initialisation of values in the game--------
-        store = JsonStore(addr)
-        config = GameConfig()
-        config.STATE = 'PAUSED'                                                                              #type: ignore
-        config.STORE = store                                                                                  #type:ignore
-        if store.exists("HIGH_SCORE"):
-            scores = store.get('HIGH_SCORE')
-            config.HIGH_SCORE = scores['HIGH_SCORE']
-        else:
-            store['HIGH_SCORE'] = {"HIGH_SCORE":1000}
-            config.HIGH_SCORE = 1000                                                                        #type:ignore
-        # ---------------------------------
         boxLayout  = MDBoxLayout()
         boxLayout.md_bg_color = (0,0,0,1) 
         boxLayout.orientation = "vertical"
         label =  ScoreLabel()
-        label.highScore = config.HIGH_SCORE #type:ignore
+        label.highScore = gameConfig.HIGH_SCORE #type:ignore
         boxLayout.add_widget(label)
-        game = GameWidget(label,config)
+        game = GameWidget(label,gameConfig)
+    
         boxLayout.add_widget(game)
         game.size_hint = (1,.85)
         label.size_hint = (1,.15)
@@ -86,12 +85,38 @@ class GameScreen(Screen):
 
 
 class SnakeApp(MDApp):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Window.bind(on_keyboard=self.Android_back_click)
     def build(self):
-        global addr
+        global addr,gameConfig
         addr = getAddr()
+        # initialisation of values in the game--------
+        store = JsonStore(addr)
+        gameConfig = GameConfig()
+        gameConfig.STATE = 'PAUSED'                                                                              #type: ignore
+        gameConfig.STORE = store                                                                                  #type:ignore
+        if store.exists("HIGH_SCORE"):
+            scores = store.get('HIGH_SCORE')
+            gameSettings = store.get('SETTINGS')
+            gameConfig.HIGH_SCORE = scores['HIGH_SCORE']
+            gameConfig.SOUND = gameSettings['SOUND']
+        else:
+            store['HIGH_SCORE'] = {"HIGH_SCORE":1000}
+            store['SETTINGS'] = {'SOUND' : 'ON',}
+
+            gameConfig.HIGH_SCORE = 1000                                                                        #type:ignore
+        # ---------------------------------
+
         kv = Builder.load_file("main.kv")
 
         return kv
+    #todo : implement back button somehow
+    def Android_back_click(self,window,key,*largs):
+            if key == 27:
+                print("back button pressed lol")
+                return True
+
 
 if __name__ == "__main__":
     app = SnakeApp()

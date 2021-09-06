@@ -1,0 +1,23 @@
+kivy (2.1.0-dev) UNRELEASED; urgency=medium
+
+  * update to new release
+
+ -- Matthew Einhorn <moiein2000@gmail.com>  Wed, 09 Dec 2020 19:57:00 -0500
+
+kivy (2.0.0-dev) UNRELEASED; urgency=medium
+
+  * update to new dev
+ -- Matthew Einhorn <moiein2000@gmail.com>  Sat, 01 June 2019 14:44:00 -0500
+
+kivy (1.10.1-dev) UNRELEASED; urgency=medium
+
+  * bump version to new dev
+
+ -- Gabriel Pettier <gabriel@kivy.org>  Mon, 08 May 2017 16:52:16 +0200
+
+kivy (1.9.2-0) stable; urgency=low
+
+  * Auto build.
+
+ -- Thomas-Karl Pietrowski <thopiekar@home>  Mon, 26 Jan 2015 00:07:13 +0100
+

@@ -11,10 +11,6 @@ class ScoreLabel(FloatLayout):
             webbrowser.open('https://www.youtube.com/watch?v=KMU0tzLwhbE')
         if self.state == "PLAY":
             self.state = "PAUSED"
-
-
-
-
     def updateText(self):
         text = ""
         if self.state == "HIGHSCORE":
