@@ -36,22 +36,23 @@ class GameWidget(Widget):
             self._keyboard = Window.request_keyboard(self._on_keyboard_closed,self) #type:ignore
             self._keyboard.bind(on_key_down=self._on_key_down,) #type:ignore
 #  keyboard controls
-        self.config = gameConfig = config
+        self.gameConfig = config
         self.head = Cell(pos=(maxx // 2,maxy / 2),size=GameConfig.DEFAULT_SIZE)
         self.head.update('up')
         self.add_widget(self.head)
         self.snakeList = []
         self.snakeList.append(self.head)
         self.foodList = []
-        print(self.snakeList)
+        difficulty = (GameConfig.DLIST.index(self.gameConfig.DIFFICULTY) + 1) * 0.2
         for i in range(GameConfig.FOOD_AMT):
-            type = 'FOOD' if i > GameConfig.FOOD_AMT *.75  else 'TAINTED'
+
+            type = 'FOOD' if i >= GameConfig.FOOD_AMT * difficulty  else 'TAINTED'
             food = Cell(size=GameConfig.FOOD_SIZE,type=type) #type:ignore
             food.respawnFood(minx,miny,maxx,maxy)
             self.add_widget(food)
             self.foodList.append(food)
         Clock.schedule_interval(self.move_step,0)
-        self.config.STATE = label.state = "PAUSED"
+        self.gameConfig.STATE = label.state = "PAUSED"
 
 
     
@@ -60,9 +61,9 @@ class GameWidget(Widget):
         self.clear_widgets()
         label.__init__()
         self.snakeList = None
-        self.config.HIGH_SCORE = label.highScore = hs
-        self.__init__(labelWidget=label,config=self.config)
-        self.config.RESET_COUNT = 3
+        self.gameConfig.HIGH_SCORE = label.highScore = hs
+        self.__init__(labelWidget=label,config=self.gameConfig)
+        self.gameConfig.RESET_COUNT = 3
         # clock.idle will make sure that the old functions do not listen for clock.
         Clock.idle
 
@@ -70,29 +71,29 @@ class GameWidget(Widget):
     def increment_score(self):
         label.updateScore(label.score + 100)
         if label.score % 5000 == 0 : 
-            self.config.CHANCES += 1
+            self.gameConfig.CHANCES += 1
             label.chances += 1
-            playSound(oneup,self.config.SOUND)                                                                    #type: ignore
-        if label.score > self.config.HIGH_SCORE:
-                if self.config.STATE == label.state == 'PLAY': playSound(gotahighscore,self.config.SOUND)         #type: ignore
-                self.config.HIGH_SCORE = label.score
+            playSound(oneup,self.gameConfig.SOUND)                                                                    #type: ignore
+        if label.score > self.gameConfig.HIGH_SCORE:
+                if self.gameConfig.STATE == label.state == 'PLAY': playSound(gotahighscore,self.gameConfig.SOUND)         #type: ignore
+                self.gameConfig.HIGH_SCORE = label.score
                 label.highScore = label.score
                 label.state = 'EASTEREGG'
-                self.config.STORE['HIGH_SCORE'] = {"HIGH_SCORE":label.score}
-        playSound(ateadonut,self.config.SOUND)
+                self.gameConfig.STORE['HIGH_SCORE'] = {"HIGH_SCORE":label.score}
+        playSound(ateadonut,self.gameConfig.SOUND)
 
 
     def on_touch_down(self, touch):
         global label
-        if label.state == "PAUSED" or self.config.STATE == 'PAUSED':
+        if label.state == "PAUSED" or self.gameConfig.STATE == 'PAUSED':
             label.state = "PLAY"
-            self.config.STATE = "PLAY"
-            playSound(startgame,self.config.SOUND)                                                             #type: ignore
+            self.gameConfig.STATE = "PLAY"
+            playSound(startgame,self.gameConfig.SOUND)                                                             #type: ignore
 
-        if label.state == "DEAD" or self.config.STATE == 'DEAD':
-            self.config.RESET_COUNT -= 1
+        if label.state == "DEAD" or self.gameConfig.STATE == 'DEAD':
+            self.gameConfig.RESET_COUNT -= 1
         directions = ['up','right','down','left','w','d','s','a','spacebar']
-        ind = (directions.index(self.keyPressed) + 1) % 4
+        ind = (directions.index(self.keyPressed) + 1) % 4 if self.gameConfig.CONTROLS == "CLOCKWISE" else (directions.index(self.keyPressed) - 1) % 4
         self.keyPressed = directions[ind]
         self.head.update(self.keyPressed)
         self.speedup = True
@@ -105,15 +106,16 @@ class GameWidget(Widget):
 
     def _on_key_down(self,keyboard,keycode,text,modifiers):
         directions = ['up','right','down','left','w','d','s','a']
-        if label.state == "PAUSED" or self.config.STATE == "PAUSED":
-                label.state = "PLAY"
-                self.config.STATE = "PLAY"
-                playSound(startgame,self.config.SOUND)                                                            #type: ignore
+                                                                    #type: ignore
 
         if label.state == "DEAD":
-            self.config.RESET_COUNT -= 1
+            self.gameConfig.RESET_COUNT -= 1
         keyPressed = keycode[1]
         if keyPressed in directions:
+            if label.state == "PAUSED" or self.gameConfig.STATE == "PAUSED":
+                label.state = "PLAY"
+                self.gameConfig.STATE = "PLAY"
+                playSound(startgame,self.gameConfig.SOUND)
             ind = (directions.index(keyPressed)) % 4
             self.keyPressed = directions[ind]
             self.head.update(self.keyPressed)
@@ -137,7 +139,7 @@ class GameWidget(Widget):
             newx = (step_size + newx) % maxx  
         # DEBUG ONLY------
         elif "spacebar" == direction:
-            label.state = self.config.STATE = 'DEAD'
+            label.state = self.gameConfig.STATE = 'DEAD'
             for i in range(len(self.snakeList)):
                 self.snakeList[i].type = "DEAD" if i % 2 == 0 else 'DEAD1'
 
@@ -150,10 +152,10 @@ class GameWidget(Widget):
             if collides(self.head.pos,food.pos,self.snakeList[0].size,food.size):
                 if food.type == 'TAINTED':
                     label.getHit()
-                    playSound(atepoison,self.config.SOUND)                                                      #type: ignore
+                    playSound(atepoison,self.gameConfig.SOUND)                                                      #type: ignore
                     if label.chances == 0:
-                        self.config.STATE = label.state  = 'DEAD'
-                        playSound(died,self.config.SOUND)                                                        #type: ignore
+                        self.gameConfig.STATE = label.state  = 'DEAD'
+                        playSound(died,self.gameConfig.SOUND)                                                        #type: ignore
                         for i in range(len(self.snakeList)):
                             self.snakeList[i].type = "DEAD" if i % 2 == 0 else 'DEAD1'
                 else:
@@ -163,15 +165,15 @@ class GameWidget(Widget):
                     self.snakeList.append(sb)
                     self.add_widget(sb)
                     if len(self.snakeList) % 5 == 0:
-                        for i in range(int(self.config.FOOD_AMT *.75), self.config.FOOD_AMT):
+                        for i in range(int(self.gameConfig.FOOD_AMT *.75), self.gameConfig.FOOD_AMT):
                             self.foodList[i].respawnFood(minx,miny,maxx,maxy)
                 food.respawnFood(minx,miny,maxx,maxy)
 
     def move_step(self,deltatime):
         global label,maxx,maxy,minx,miny
-        if label.state == 'PAUSED' or self.config.STATE == 'PAUSED':return
-        if self.config.STATE == 'DEAD':
-            if self.config.RESET_COUNT == 0:
+        if label.state == 'PAUSED' or self.gameConfig.STATE == 'PAUSED':return
+        if self.gameConfig.STATE == 'DEAD':
+            if self.gameConfig.RESET_COUNT == 0:
                 self.reset_game()
                 #  the false here tells the scheduled clock to stop executing the move_step function.
                 return False
